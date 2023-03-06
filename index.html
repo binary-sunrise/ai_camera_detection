@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Tourist Desinations Kerala</title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.13.0/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.13.0/mapbox-gl.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="map"></div>
+    <script>
+        mapboxgl.accessToken = 'pk.eyJ1IjoiYWJoYXlmenYyIiwiYSI6ImNsZXNzZW9mcTAyanozem83am12NmJlczQifQ._w2s02CV9Ufl62nRwCrY9w';
+        const map = new mapboxgl.Map({
+            container: 'map', // container ID
+            // Choose from Mapbox's core styles, or make your own style with Mapbox Studio
+            style: 'mapbox://styles/mapbox/outdoors-v12', // style URL
+            center: [76.946268, 8.514962], // starting position [lng, lat]
+            zoom: 12, // starting zoom
+            projection: 'globe'
+
+
+        });
+
+
+        map.on('load', () => {
+            //add source and layer for the districts and Travel Destinations
+            map.addSource('Districts', {
+                type: 'geojson',
+                data: 'Data/Districts.geojson'
+            })
+            map.addSource('TravelDestinations', {
+                type: 'geojson',
+                data: 'Data/TravelDestinations.geojson'
+            })
+
+            map.addLayer({
+                id: 'Districts-fill',
+                type: 'fill',
+                source: 'Districts',
+                paint: {
+                    'fill-color': 'maroon',
+                    'fill-opacity': 0.6
+                }
+            })
+            map.addLayer({
+                id: 'Districts-line',
+                type: 'line',
+                source: 'Districts',
+                paint: {
+                    'line-color': 'black',
+                    'line-width': 2
+                }
+            })
+
+            map.addLayer({
+                id: 'TravelDestinations-locations',
+                type: 'circle',
+                source: 'TravelDestinations',
+                paint: {
+                    'circle-radius': 4,
+                    'circle-stroke-width': 2,
+                    'circle-color': 'red',
+                    'circle-stroke-color': 'white'
+                }
+            })
+        })
+
+        map.on('click', (e) => {
+            const [selectedFeatures] = map.queryRenderedFeatures(e.point, {
+                layers: ['Districts-fill']
+                
+
+            });
+            
+            
+            if (selectedFeatures) {
+                const { POLYGON_NM, Shape_Area } = selectedFeatures.properties
+                const popup1 = new mapboxgl.Popup()
+                    .setLngLat(e.lngLat)
+                    .setHTML(`The Area of ${POLYGON_NM} is ${Shape_Area}`)
+                    .addTo(map);
+                
+                }
+            })
+        map.on('click', (e) => {
+            const [selectedFeatures] = map.queryRenderedFeatures(e.point, {
+                layers: ['TravelDestinations-locations']
+
+            });
+            if (selectedFeatures) {
+                const { POI_NAME, DISTRICT } = selectedFeatures.properties
+                const popup1 = new mapboxgl.Popup()
+                    .setLngLat(e.lngLat)
+                    .setHTML(`${POI_NAME} is located in ${DISTRICT} District`)
+                    .addTo(map);
+                }
+            })
+
+
+    </script>
+
+</body>
+
+</html>

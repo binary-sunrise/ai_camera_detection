@@ -24,3 +24,28 @@ body {
     text-align: center;
     font-family: 'Open Sans', sans-serif;
 }
+
+/* Define styles for the popup container */
+.custom-popup {
+    max-width: 200px;
+    padding: 10px;
+    background-color: #9dd4f4;
+    border-radius: 5px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+  /* Define styles for the popup content */
+.custom-popup-content {
+    font-size: 16px;
+    color: #333;
+}
+
+  /* Define styles for the close button */
+.custom-popup-close-button {
+    cursor: pointer;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    font-size: 14px;
+    color: #666;
+}

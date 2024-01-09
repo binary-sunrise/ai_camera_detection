@@ -1,87 +1,197 @@
+//Mapbox token 
 mapboxgl.accessToken = 'pk.eyJ1IjoiYWJoYXlmenYyIiwiYSI6ImNsZXNzZW9mcTAyanozem83am12NmJlczQifQ._w2s02CV9Ufl62nRwCrY9w';
 
+//Initializing the Map
+const map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/mapbox/standard',
+    projection: 'globe',
+    zoom: 6.23,
+    center: [76.36782, 10.38870]
+});
 
-    const map = new mapboxgl.Map({
-        container: 'map', // container ID
-        // Choose from Mapbox's core styles, or make your own style with Mapbox Studio
-        style: 'mapbox://styles/mapbox/satellite-v9', // style URL
-        projection: 'globe', // Display the map as a globe, since satellite-v9 defaults to Mercator
-        zoom: 6.23, // starting zoom
-        center: [76.36782, 10.38870] // // starting center in [lng, lat]
+//GIS DATA
+const data = 'AI_camera.geojson';
+
+// Add the custom marker image to the map
+map.loadImage(
+    "Assets/camera.png", // Replace with the URL of your custom marker image
+    function (error, image) {
+        if (error) throw error;
+        map.addImage('custom-marker', image);
+    }
+    );
+
+//Navigation control
+
+// map.addControl(new mapboxgl.NavigationControl({
+//     visualizePitch: true,
+//     showCompass: true
+// }));
+
+
+//Geolocation control
+
+var geolocate = new mapboxgl.GeolocateControl({
+    positionOptions: {
+        enableHighAccuracy: true
+    },
+    trackUserLocation: true,
+    showUserHeading: true
+});
+
+map.addControl(geolocate);
+
+// geolocate.on('geolocate', function(e) {
+//     var lon = e.coords.longitude;
+//     var lat = e.coords.latitude
+//     var position = [lon, lat];
+// });
+
+
+map.on('style.load', () => {
+    map.setFog({});
+});
+
+map.on('load', () => {
+    map.addSource('AI_camera', {
+        type: 'geojson',
+        data: data
     });
 
-
-    const data = 'AI_camera.geojson'
-
-    // Add navigation controls
-    map.addControl(new mapboxgl.NavigationControl());
-
-    map.on('style.load', () => {
-        map.setFog({}); // Set the default atmosphere style
+    map.addLayer({
+        'id': 'AI_camera-locations',
+        'type': 'symbol',
+        'source': 'AI_camera',
+        // 'paint': {
+        //     'circle-radius': 4,
+        //     'circle-stroke-width': 2,
+        //     'circle-color': 'red',
+        //     'circle-stroke-color': 'white'
+        // },
+        'layout': {
+            'icon-image': 'custom-marker', // Reference to the custom marker image
+            'icon-size': 0.05, // Adjust the size as needed
+            'icon-allow-overlap': false, // Allow icons to overlap
+        }
     });
 
-    map.on('load', () => {
-        // map.loadImage('/Assets/camera.png', function (error, image) {
-        //     if (error) throw error;
-        //     map.addImage('custom-marker', image);
-            map.addSource('AI_camera', {
-                type: 'geojson',
-                // Use a URL for the value for the `data` property.
-                data: data
-            });
-            map.addLayer({
-                'id': 'AI_camera-locations',
-                'type': 'circle',
-                'source': 'AI_camera',
-                'paint': {
-                    'circle-radius': 4,
-                    'circle-stroke-width': 2,
-                    'circle-color': 'red',
-                    'circle-stroke-color': 'white'
-                },
-                // 'layout': {
-                //     'icon-image': 'custom-marker',
-                //     'icon-size': 0.5
-                // }
-            })
+    
 
-            
+    map.on('click', 'AI_camera-locations', (e) => {
+      const coordinates = e.features[0].geometry.coordinates;
+      const Name = "Name: " + e.features[0].properties.Name;
 
-        // Check proximity on map move
-        map.on('move', function () {
-            checkProximity();
+    // Populate the popup and set its coordinates
+    new mapboxgl.Popup()
+    .setLngLat(coordinates)
+    .setHTML(
+        `<div class="custom-popup">
+        <div class="custom-popup-content">${Name}</div>
+        </div>`
+    )
+    .addTo(map);
+    });
+
+    // Change the cursor style to indicate clickable marker
+    map.on('mouseenter', 'AI_camera-locations', () => {
+        map.getCanvas().style.cursor = 'pointer';
         });
 
-        // Check proximity initially
-        checkProximity();
+    map.on('mouseleave', 'AI_camera-locations', () => {
+        // Reset cursor style and close the popup when mouse leaves the marker
+        map.getCanvas().style.cursor = '';
     });
-    // Function to check proximity and show alert
-    function checkProximity() {
-        var userLocation = map.getCenter();
-        var targetPoint = [76.36782, 10.38870]; // Replace with the coordinates of your target point
 
-        var distance = turf.distance(
-            turf.point(userLocation.toArray()),
-            turf.point(targetPoint),
-            { units: 'kilometers' }
-        );
+    //Check proximity on map move
+    // map.on('move', function () {
+    //     checkProximity();
+    // });
 
-        // Set your desired proximity threshold
-        var proximityThreshold = 0; // in kilometers
+    // Check proximity initially
+    map.on('idle', function() {
+        checkProximity();
+      });
+    
+});
 
-        if (distance < proximityThreshold) {
-            alert('You are near the target point!');
+function checkProximity() {
+
+    geolocate.on('geolocate', function(e) {
+        var lon = e.coords.longitude;
+        var lat = e.coords.latitude
+        var position = [lon, lat];
+    
+        // var userLocation = map.getCenter();
+        var userLocation = position ;
+        // var targetPoint = [76.36782, 10.38870];
+        var features = map.querySourceFeatures('AI_camera');
+    // });
+
+        if (features.length > 0) {
+            // Use the first AI camera location as the target point
+            var targetPoint = features[0].geometry.coordinates;
+            var cameraName = features[0].properties.Name;
+
+            console.log(targetPoint)
+
+            var distance = turf.distance(
+                // turf.point(userLocation.toArray()),
+                turf.point(userLocation),
+                turf.point(targetPoint),
+                { units: 'kilometers' }
+            );
+
+            var proximityThreshold = 20; // Adjust the threshold distance as needed
+
+            if (distance < proximityThreshold) {
+            // Show alert when user is near the target point
+            // alert(`You are ${distance} kms from the AI camera ${cameraName}`);
+
+                new mapboxgl.Popup()
+                .setLngLat(targetPoint)
+                .setHTML(
+                    `<div class="custom-popup">
+                        <div class="custom-popup-content">${cameraName}</div>
+                    </div>`
+                )
+                .addTo(map);
+
+            // Close the alert after 3 seconds (3000 milliseconds)
+            // setTimeout(() => {
+            //     alert.close(); // Note: This may not be available in all browsers
+            // }, 1000);
+            
+            }
+
         }
-    }
-    // Add geolocate control to the map.
-    map.addControl(
-        new mapboxgl.GeolocateControl({
-            positionOptions: {
-                enableHighAccuracy: true
-            },
-            // When active the map will receive updates to the device's location as it changes.
-            trackUserLocation: true,
-            // Draw an arrow next to the location dot to indicate which direction the device is heading.
-            showUserHeading: true
-        })
-    );
+
+    // var distance = turf.distance(
+    //     turf.point(userLocation.toArray()),
+    //     turf.point(targetPoint),
+    //     { units: 'kilometers' }
+    // );
+
+    // var proximityThreshold = 0;
+
+    // if (distance < proximityThreshold) {
+    //     // Show popup when user is near the target point
+    //     popup.setLngLat(targetPoint)
+    //         .setHTML('You are near the target point!')
+    //         .addTo(map);
+    // } else {
+    //     // Remove popup if not near the target point
+    //     popup.remove();
+    // }
+    });
+}
+
+// map.addControl(
+//     new mapboxgl.GeolocateControl({
+//         positionOptions: {
+//             enableHighAccuracy: true
+//         },
+//         trackUserLocation: true,
+//         showUserHeading: true
+//     })
+// );

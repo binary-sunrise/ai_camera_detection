@@ -20,7 +20,7 @@ body {
     max-width: 200px;
 }
   
-.mapboxgl-popup-content {
+.mapboxgl-popup-content {   
     text-align: center;
     font-family: 'Open Sans', sans-serif;
 }
@@ -48,4 +48,52 @@ body {
     right: 5px;
     font-size: 14px;
     color: #666;
+}
+
+#marker {
+    /* background-image: url('Assets/camera.png'); */
+    background-size: cover;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.mapboxgl-popup {
+    max-width: 200px;
+}
+
+#banner {
+    display: none;
+    background-color: #3498db;
+    color: #ecf0f1;
+    padding: 10px; /* Reduce padding */
+    text-align: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    font-family: 'Arial', sans-serif; /* Change to sans-serif font */
+}
+
+.banner-content {
+    font-size: 14px; /* Reduce font size */
+    margin-bottom: 5px; /* Reduce margin */
+}
+
+.banner-close {
+    cursor: pointer;
+    background-color: #2980b9;
+    color: #ecf0f1;
+    border: none;
+    padding: 6px 10px; /* Reduce padding */
+    font-size: 12px; /* Reduce font size */
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.banner-close:hover {
+    background-color: #1a6781;
 }

@@ -14,6 +14,7 @@ const map = new mapboxgl.Map({
 const data = 'AI_camera.geojson';
 
 // Add the custom marker image to the map
+
 map.loadImage(
     "Assets/camera.png", // Replace with the URL of your custom marker image
     function (error, image) {
@@ -63,12 +64,6 @@ map.on('load', () => {
         'id': 'AI_camera-locations',
         'type': 'symbol',
         'source': 'AI_camera',
-        // 'paint': {
-        //     'circle-radius': 4,
-        //     'circle-stroke-width': 2,
-        //     'circle-color': 'red',
-        //     'circle-stroke-color': 'white'
-        // },
         'layout': {
             'icon-image': 'custom-marker', // Reference to the custom marker image
             'icon-size': 0.05, // Adjust the size as needed
@@ -82,15 +77,46 @@ map.on('load', () => {
       const coordinates = e.features[0].geometry.coordinates;
       const Name = "Name: " + e.features[0].properties.Name;
 
-    // Populate the popup and set its coordinates
-    new mapboxgl.Popup()
-    .setLngLat(coordinates)
-    .setHTML(
+      console.log(Name);
+
+      // // Populate the popup and set its coordinates
+      // new mapboxgl.Popup()
+      // .setLngLat(coordinates)
+      // .setHTML(
+      //     `<div class="custom-popup">
+      //     <div class="custom-popup-content">${Name}</div>
+      //     </div>`
+      // )
+      // .addTo(map);
+
+      //animated popup
+      var popup= new AnimatedPopup({
+        openingAnimation: {
+          duration: 1000,
+          easing: "easeOutElastic",
+          transform: "scale",
+        },
+        closingAnimation: {
+          duration: 300,
+          easing: "easeInBack",
+          transform: "scale",
+        },
+      }).setHTML(
         `<div class="custom-popup">
-        <div class="custom-popup-content">${Name}</div>
-        </div>`
-    )
-    .addTo(map);
+      <div class="custom-popup-content">${Name}</div>
+       </div>`
+    );
+
+      // create DOM element for the marker
+        var el = document.createElement("div");
+        el.id = "marker";
+
+      // create the marker
+      new mapboxgl.Marker(el)
+        .setLngLat(coordinates)
+        .setPopup(popup) // sets a popup on this marker
+        .addTo(map);
+  
     });
 
     // Change the cursor style to indicate clickable marker
@@ -142,20 +168,35 @@ function checkProximity() {
                 { units: 'kilometers' }
             );
 
-            var proximityThreshold = 20; // Adjust the threshold distance as needed
+            var proximityThreshold = 10; // Adjust the threshold distance as needed
 
             if (distance < proximityThreshold) {
             // Show alert when user is near the target point
             // alert(`You are ${distance} kms from the AI camera ${cameraName}`);
 
-                new mapboxgl.Popup()
-                .setLngLat(targetPoint)
-                .setHTML(
-                    `<div class="custom-popup">
-                        <div class="custom-popup-content">${cameraName}</div>
-                    </div>`
-                )
-                .addTo(map);
+                // new mapboxgl.Popup()
+                // .setLngLat(targetPoint)
+                // .setHTML(
+                //     `<div class="custom-popup">
+                //         <div class="custom-popup-content">${cameraName}</div>
+                //     </div>`
+                // )
+                // .addTo(map);
+
+                new AnimatedPopup({
+                    openingAnimation: {
+                        duration: 1000,
+                        easing: 'easeOutElastic',
+                        transform: 'scale'
+                    },
+                    closingAnimation: {
+                        duration: 300,
+                        easing: 'easeInBack',
+                        transform: 'scale'
+                    }
+                }).setLngLat(targetPoint).setHTML(`<div class="custom-popup">
+                <div class="custom-popup-content">${cameraName}</div>
+            </div>`).addTo(map);
 
             // Close the alert after 3 seconds (3000 milliseconds)
             // setTimeout(() => {

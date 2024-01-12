@@ -1,16 +1,22 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="utf-8">
-<title>Load data from an external GeoJSON file</title>
-<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
-<link href="https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.css" rel="stylesheet">
-<script src="https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@turf/turf@6.5.0/turf.min.js"></script>
-<link href ="style.css" rel="stylesheet">
+    <meta charset="utf-8">
+    <title>Load data from an external GeoJSON file</title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+    <link href="https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@turf/turf@6.5.0/turf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mapbox-gl-animated-popup@latest/dist/mapbox-gl-animated-popup.min.js"></script>
+    <link href ="style.css" rel="stylesheet">
+    <audio id="notificationSound" src="path/to/notification-sound.mp3"></audio>
 </head>
 <body>
-<div id="map"></div>
-    <script src="script.js"></script>
+    <div id="map"></div>
+    <div id="banner" class="hidden">
+        <div id="bannerContent"></div>
+        <!-- <button id="closeBanner" onclick="hideBanner()">Close</button> -->
+    </div>
+    <script src="script2.js"></script>
 </body>
 </html>

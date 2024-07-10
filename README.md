@@ -6,11 +6,6 @@ This project is a web-based GIS application built using Mapbox GL JS for mapping
 - [Demo](#demo)
 - [Features](#features)
 - [Technologies](#technologies)
-- [Installation](#installation)
-- [Usage](#usage)
-- [Project Structure](#project-structure)
-- [Contributing](#contributing)
-- [License](#license)
 
 ## Demo
 You can view a live demo of the application [here](http://example.com).

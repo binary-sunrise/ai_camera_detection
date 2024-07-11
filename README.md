@@ -3,7 +3,7 @@
 This project is a web-based GIS application built using Mapbox GL JS for mapping and Turf.js for spatial analysis. The application allows users to visualize and analyze geographic data interactively.
 
 ## Table of Contents
-- [Demo](#demo)
+- [Demo](#(https://binary-sunrise.github.io/ai_camera_detection/))
 - [Features](#features)
 - [Technologies](#technologies)
 
